@@ -1,0 +1,6 @@
+[submodule "languages-barent"]
+	path = languages-barent
+	url = git@github.com:ben2445fun/languages-barent
+[submodule "languages-wmacevoy"]
+	path = languages-wmacevoy
+	url = git@github.com:wmacevoy/languages-wmacevoy
