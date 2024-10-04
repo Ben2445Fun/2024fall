@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   // Info to move the camera
   mouseLoc = glGetUniformLocation(shaderProgram, "cameraRotation");
   glUseProgram(shaderProgram);
-  cout << "Starting runtime. Enjoy!" << endl;
+  cout << "Beginning runtime. Enjoy!" << endl;
   glutMainLoop();
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
@@ -94,7 +94,6 @@ void move(const int x, const int y)
         rotY = ((-180 * (float)y / glutGet(GLUT_WINDOW_HEIGHT) - 90) * PI) / 180;
   mat4 mouseMat = mat4::rotView(rotY, rotX, .1);
   mouseMat.setUniform(mouseLoc);
-  cout << mouseLoc << endl;
   glutPostRedisplay();
 }
 void compileShader(const string shaderFile, int &shader, const GLenum shaderType)

@@ -62,6 +62,7 @@ public:
   }
   ~mat4() {} // Deconstructor
   // End Constructors
+
   // Begin Getters
   float getVal(const int location) const // Return value from number
   {
@@ -76,6 +77,7 @@ public:
     return vals[column][row];
   }
   // End Getters
+
   // Begin Setters
   void setVal(const int location, const float newValue) // Set the value at location to newValue
   {
@@ -90,6 +92,7 @@ public:
     vals[column][row] = newValue;
   }
   // End Setters
+
   // Begin Overrides
   mat4 &operator*(const float &other) const //
   {
@@ -97,6 +100,25 @@ public:
     for (int i = 0; i < 4; i++)
       for (int o = 0; o < 4; o++)
         returnMatrix.setVal(i, o, getVal(i, o) * other);
+    return returnMatrix;
+  }
+  mat4 &operator*(const mat4 &other) const
+  {
+    static mat4 returnMatrix;
+    float total = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      for (int o = 0; o < 4; o++)
+      {
+        for (int u = 0; u < 4; u++)
+        {
+          total += this->getVal(u, o) * other.getVal(o, u);
+        }
+        returnMatrix.setVal(i, o, total);
+        total = 0;
+        // WORKING HERE. I'm not sure how I'm gonna do this, but I'll find a way
+      }
+    }
     return returnMatrix;
   }
   mat4 &operator=(const mat4 &other) const
@@ -118,10 +140,11 @@ public:
     return out;
   }
   // End Overrides
+
   // Begin Other
   static mat4 rotView(const float theta1, const float theta2, const float s) // Calculate the rotation of the camera
   {
-    return cross(mat4::rotX(theta1), mat4::rotY(theta2)) * s;
+    return mat4::rotX(theta1) * mat4::rotY(theta2) * s;
   }
   static mat4 rotX(const float theta) // Return a mat4 with calculated x rotation
   {
@@ -136,33 +159,6 @@ public:
                 0.0, 1.0, 0.0, 0.0,
                 -sin(theta), 0.0, cos(theta), 0.0,
                 0.0, 0.0, 0.0, 1.0);
-  }
-  static mat4 dot(const mat4 &matrix1, const mat4 &matrix2)
-  {
-    mat4 returnMatrix;
-    for (int i = 0; i < 4; i++)
-      for (int o = 0; o < 4; o++)
-        returnMatrix.setVal(i, o, matrix1.getVal(i, o) * matrix2.getVal(i, o));
-    return returnMatrix;
-  }
-  static mat4 cross(const mat4 &matrix1, const mat4 &matrix2)
-  {
-    mat4 returnMatrix;
-    for (int i = 0; i < 4; i++)
-    {
-      for (int o = 0; o < 4; o++)
-      {
-        returnMatrix.setVal(i, o, crossed(i, matrix1, matrix2));
-      }
-    }
-    return returnMatrix;
-  }
-  static float crossed(const int i, const mat4 &matrix1, const mat4 &matrix2)
-  {
-    float total = 0;
-    for (int o = 0; o < 4; o++)
-      total += matrix1.getVal(o, i) * matrix2.getVal(i, o);
-    return total;
   }
   void setUniform(const int location)
   {

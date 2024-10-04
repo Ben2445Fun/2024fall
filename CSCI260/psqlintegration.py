@@ -12,7 +12,8 @@ while True :
         "[3] Quit")
   selection = input("Enter: ")
   if   selection == "1" :
-    print(*cursor.execute("\dt"))
+    cursor.execute("\dt") #Doesn't like :/
+    print(*cursor)
   elif selection == "2" :
     print("Selected 2")
   else :
