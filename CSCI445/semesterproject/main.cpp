@@ -58,7 +58,7 @@ int main(int argc, char **argv)
   compileShader("fragment.glsl", fragmentShader, GL_FRAGMENT_SHADER);
   const unsigned int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
-  //  glAttachShader(shaderProgram, fragmentShader);
+  glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &exception);
   char exceptionLog[512];
@@ -85,14 +85,14 @@ void display()
 {
   glClear(GL_COLOR_BUFFER_BIT);
   // Render stuff here
-  glutWireSphere(0.9, 36, 18);
+  glutSolidSphere(0.9, 360, 180);
   glutSwapBuffers();
 }
 void move(const int x, const int y)
 {
   float rotX = ((180 * (float)x / glutGet(GLUT_WINDOW_WIDTH) + 90) * PI) / 180,
         rotY = ((180 * (float)y / glutGet(GLUT_WINDOW_HEIGHT) - 90) * PI) / 180;
-  mat4 mouseMat = mat4::rotView(rotY, rotX, .1);
+  mat4 mouseMat = mat4::rotView(rotY, rotX, 2);
   mouseMat.setUniform(mouseLoc);
   glutPostRedisplay();
 }
