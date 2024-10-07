@@ -92,7 +92,7 @@ void move(const int x, const int y)
 {
   float rotX = ((180 * (float)x / glutGet(GLUT_WINDOW_WIDTH) + 90) * PI) / 180,
         rotY = ((180 * (float)y / glutGet(GLUT_WINDOW_HEIGHT) - 90) * PI) / 180;
-  mat4 mouseMat = mat4::rotView(rotY, rotX, 2);
+  mat4 mouseMat = mat4::rotView(rotY, rotX, .1);
   mouseMat.setUniform(mouseLoc);
   glutPostRedisplay();
 }

@@ -94,7 +94,7 @@ public:
   // End Setters
 
   // Begin Overrides
-  mat4 &operator*(const float &other) const //
+  mat4 &operator*(const float &other) const // Scale a matrix by a float
   {
     static mat4 returnMatrix;
     for (int i = 0; i < 4; i++)
@@ -102,7 +102,7 @@ public:
         returnMatrix.setVal(i, o, getVal(i, o) * other);
     return returnMatrix;
   }
-  mat4 &operator*(const mat4 &other) const
+  mat4 &operator*(const mat4 &other) const // Multiply 2 matrixes together
   {
     static mat4 returnMatrix;
     float total = 0;
@@ -120,7 +120,7 @@ public:
     }
     return returnMatrix;
   }
-  mat4 &operator=(const mat4 &other) const
+  mat4 &operator=(const mat4 &other) const // Simply matrix copier
   {
     static mat4 returnMatrix;
     for (int i = 0; i < 4; i++)
@@ -128,7 +128,7 @@ public:
         returnMatrix.setVal(i, o, other.getVal(i, o));
     return returnMatrix;
   }
-  friend std::ostream &operator<<(std::ostream &out, const mat4 &other)
+  friend std::ostream &operator<<(std::ostream &out, const mat4 &other) // Output the values of each cell of a matrix
   {
     for (int i = 0; i < 4; i++)
     {
@@ -143,7 +143,7 @@ public:
   // Begin Other
   static mat4 rotView(const float theta1, const float theta2, const float s) // Calculate the rotation of the camera
   {
-    return mat4::rotX(theta1) * mat4::rotY(theta2) * s;
+    return (mat4::rotX(theta1) * mat4::rotY(theta2)) * s;
   }
   static mat4 rotX(const float theta) // Return a mat4 with calculated x rotation
   {

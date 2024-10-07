@@ -21,3 +21,6 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f $(EXECUTABLE) $(OBJECTS) *.log
+
+run:
+	./$(EXECUTABLE)
