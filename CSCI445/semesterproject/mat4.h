@@ -70,7 +70,7 @@ public:
       return NAN;
     return vals[location % 4][location / 4];
   }
-  float getVal(const int column, const int row) const // Return value from selected row and column
+  float getVal(const int row, const int column) const // Return value from selected row and column
   {
     if (column > 3 || column < 0 || row > 3 || row < 0)
       return NAN;
@@ -85,7 +85,7 @@ public:
       return;
     vals[location % 4][location / 4] = newValue;
   }
-  void setVal(const int column, const int row, const float newValue) // Set the value at [column][row] to newValue
+  void setVal(const int row, const int column, const float newValue) // Set the value at [column][row] to newValue
   {
     if (column > 3 || column < 0 || row > 3 || row < 0)
       return;
@@ -112,11 +112,10 @@ public:
       {
         for (int u = 0; u < 4; u++)
         {
-          total += this->getVal(u, o) * other.getVal(o, u);
+          total += this->getVal(i, u) * other.getVal(u, o);
         }
         returnMatrix.setVal(i, o, total);
         total = 0;
-        // WORKING HERE. I'm not sure how I'm gonna do this, but I'll find a way
       }
     }
     return returnMatrix;
