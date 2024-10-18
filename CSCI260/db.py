@@ -11,7 +11,6 @@ def connectDB():
                             user="csci260",
                             password="MinecraftFun@1.21.2")
     cursor = conn.cursor()
-    print("Connect Success")
     return cursor
 
 def disconnectDB():

@@ -7,6 +7,25 @@
 
 from db import *
 
+def updateCourse(dept,number,newCRN,newDept,newNumber):
+    cursor = connectDB()
+    if number == None:
+        if newCRN != '':
+            cursor.execute("UPDATE courses SET crn = '%s' WHERE crn = '%s'"%(newCRN,dept))
+        if newDept != '':
+            cursor.execute("UPDATE courses SET class = '%s' WHERE crn = '%s'"%(newDept,dept))
+        if newNumber != '':
+            cursor.execute("UPDATE courses SET number = '%s' WHERE crn = '%s'"%(newNumber,dept))
+    else:
+        if newCRN != '':
+            cursor.execute("UPDATE courses SET crn = '%s' WHERE class = '%s' AND number = '%s'"%(newCRN,dept,number))
+        if newDept != '':
+            cursor.execute("UPDATE courses SET class = '%s' WHERE class = '%s' AND number = '%s'"%(newDept,dept,number))
+        if newNumber != '':
+            cursor.execute("UPDATE courses SET number = '%s' WHERE class = '%s' AND number = '%s'"%(newNumber,dept,number))
+    disconnectDB()
+
+
 def Update():
     cursor=connectDB()
 

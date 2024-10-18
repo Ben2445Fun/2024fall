@@ -9,10 +9,7 @@ from db import *
 
 def addCourse(crn,dept,number):
     cursor=connectDB()
-    #Use Fstring Formatted String to add class and number to query
-    query="INSERT INTO courses (crn,class,number) VALUES ('%s','%s','%s');" %(crn,dept,number)
-    print(query)
-    cursor.execute(query)
+    cursor.execute("INSERT INTO courses (crn,class,number) VALUES ('%s','%s','%s');" %(crn,dept,number))
     disconnectDB()
 
 def Add():
