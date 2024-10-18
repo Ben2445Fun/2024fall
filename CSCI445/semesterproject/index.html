@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1" />
+  <title>Little Blue Marble</title>
+</head>
+
+<body>
+  <script type="module">
+    import * as THREE from './three.module.js'
+    let camera, scene, renderer;
+    let earth, skybox;
+    init();
+    function init() {
+      //Initialize Stuff
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 100);
+      camera.position.z = 2;
+      scene = new THREE.Scene();
+
+      //Make Earth
+      const earthtex = new THREE.TextureLoader().load('./images/Earth-Mercator-Night-Texture.jpg');
+      earthtex.colorSpace = THREE.SRGBColorSpace;
+      const earthgeo = new THREE.SphereGeometry(1, 32, 32);
+      const earthmat = new THREE.MeshBasicMaterial({ map: earthtex });
+      earth = new THREE.Mesh(earthgeo, earthmat);
+      scene.add(earth);
+
+      //Make Skybox
+      const skyboxtex = new THREE.TextureLoader().load('./images/MilkyWay-Mercator-Texture.jpg');
+      skyboxtex.colorSpace = THREE.SRGBColorSpace;
+      const skyboxgeo = new THREE.SphereGeometry(-50, 32, 32);
+      const skyboxmat = new THREE.MeshBasicMaterial({ map: skyboxtex });
+      skybox = new THREE.Mesh(skyboxgeo, skyboxmat);
+      scene.add(skybox);
+
+      //Render Stuff
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setAnimationLoop(animate);
+      document.body.appendChild(renderer.domElement);
+      window.addEventListener('resize', onWindowResize);
+    }
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    function animate() {
+      earth.rotation.y += .0000013888888888889; //Real-time rotation speed
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+
+</html>

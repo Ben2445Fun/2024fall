@@ -50,6 +50,7 @@ int main(int argc, char **argv)
     cout << "Error while initializing window" << endl;
     exit(1);
   }
+  glEnable(GL_TEXTURE_2D);
   glutDisplayFunc(display);
   glutMotionFunc(move);
   // Link shaders
