@@ -1,6 +1,7 @@
 from tkinter import *
 from showCourses import ShowStr
 from addCourses import addCourse
+from removeCourses import removeCourse
 
 # Add course
 def addCourseClick(win,textCRN,textDepartment,textNumber):
@@ -40,8 +41,15 @@ def addCourseWindow(root):
 
 # Remove Course
 def removeCourseClick(win):
-    exit()
-def removeCourseWindow(root):
+    if 'labelCRN' in globals() and labelCRN.winfo_exists():
+        crn = textCRN.get("1.0","end-1c")
+        removeCourse(crn,None)
+    elif 'labelDepartment' in globals() and labelDepartment.winfo_exists():
+        dept = textDepartment.get("1.0","end-1c")
+        number = textNumber.get("1.0","end-1c")
+        removeCourse(dept,number)
+    win.destroy()
+def removeCourseWindow(root): #Add a remove course window
     win=Toplevel(root)
     leftframe = Frame(win)
     leftframe.pack(side=LEFT)
@@ -51,17 +59,27 @@ def removeCourseWindow(root):
     switchCRN.pack()
     switchDN = Button(rightframe,text="Department & Number",command=lambda:removeCoursebyDN(leftframe,rightframe,win,switchCRN,switchDN))
     switchDN.pack()
-def removeCoursebyCRN(leftframe,rightframe,win,switchCRN,switchDN):
+    #Default state
+    removeCoursebyCRN(leftframe,rightframe,win,switchCRN,switchDN)
+def removeCoursebyCRN(leftframe,rightframe,win,switchCRN,switchDN): #Allows the user to remove a course using its CRN
     switchCRN.config(relief=SUNKEN,state=DISABLED)
     switchDN.config(relief=RAISED,state=NORMAL)
+    clearRemoveCourse()
+    global labelCRN
+    global textCRN
     labelCRN = Label(leftframe,text="CRN")
     labelCRN.pack()
     textCRN = Text(rightframe,height=1,width=30)
     textCRN.pack()
     removeCourseOptions(leftframe,rightframe,win)
-def removeCoursebyDN(leftframe,rightframe,win,switchCRN,switchDN):
+def removeCoursebyDN(leftframe,rightframe,win,switchCRN,switchDN): #Allows the user to remove a course using its department and number
     switchCRN.config(relief=RAISED,state=NORMAL)
     switchDN.config(relief=SUNKEN,state=DISABLED)
+    clearRemoveCourse()
+    global labelDepartment
+    global textDepartment
+    global labelNumber
+    global textNumber
     labelDepartment = Label(leftframe,text="Department")
     labelDepartment.pack()
     textDepartment = Text(rightframe,height=1,width=30)
@@ -72,11 +90,25 @@ def removeCoursebyDN(leftframe,rightframe,win,switchCRN,switchDN):
     textNumber.pack()
     removeCourseOptions(leftframe,rightframe,win)
     lambda: removeCourseOptions()
-def removeCourseOptions(leftframe,rightframe,win):
-    confirm = Button(leftframe,text="Delete Course")
+def removeCourseOptions(leftframe,rightframe,win): #Adds "delete" and "cancel" buttons to window
+    global confirm
+    global cancel
+    confirm = Button(leftframe,text="Delete Course",command=lambda: removeCourseClick(win))
     confirm.pack()
     cancel = Button(rightframe,text="Cancel",command=win.destroy)
     cancel.pack()
+def clearRemoveCourse(): #Removes previous buttons from the delete window
+    if 'labelCRN' in globals() and labelCRN.winfo_exists():
+        labelCRN.destroy()
+        textCRN.destroy()
+    if 'labelDepartment' in globals() and labelDepartment.winfo_exists():
+        labelDepartment.destroy()
+        textDepartment.destroy()
+        labelNumber.destroy()
+        textNumber.destroy()
+    if 'confirm' in globals() and confirm.winfo_exists():
+        confirm.destroy()
+        cancel.destroy()
 
 # Update Course
 def updateCourseClick(win):
