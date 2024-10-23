@@ -9,7 +9,7 @@ def connectDB():
     conn = psycopg2.connect(database="csci260",
                             host="localhost",
                             user="csci260",
-                            password="MinecraftFun@1.21.2")
+                            password="password")
     cursor = conn.cursor()
     return cursor
 

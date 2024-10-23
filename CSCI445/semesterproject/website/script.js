@@ -49,16 +49,20 @@ function animate() {
 function earthRender() {
   const radius = 1,
     heightmaprange = 6400;
-  const earthTexture = new THREE.TextureLoader().load(
+  const earthDayTexture = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Day-Texture.jpg"
+  );
+  const earthNightTexture = new THREE.TextureLoader().load(
+    "./images/Earth-Mercator-Night-Texture.jpg"
   );
   const earthHeightmap = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Heightmap.png"
   );
-  earthTexture.colorSpace = THREE.SRGBColorSpace;
+  earthDayTexture.colorSpace = THREE.SRGBColorSpace;
+  earthNightTexture.colorSpace = THREE.SRGBColorSpace;
   const earthGeometry = new THREE.SphereGeometry(radius, 128, 128);
   const earthMaterial = new THREE.MeshStandardMaterial({
-    map: earthTexture,
+    map: earthDayTexture,
     displacementMap: earthHeightmap,
     displacementScale: radius / heightmaprange,
   });
