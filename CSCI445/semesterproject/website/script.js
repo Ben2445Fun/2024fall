@@ -1,14 +1,20 @@
-import * as THREE from "./three.module.js";
+import * as THREE from "./three.js";
+import { OrbitControls } from "./OrbitControls.js";
 let camera, scene, renderer;
 let earth, skybox;
+let t = 0;
+var uniforms1 = {
+  time: { value: t },
+  resolution: { value: new THREE.Vector2() },
+};
 init();
 function init() {
   //Initialize Stuff
   camera = new THREE.PerspectiveCamera(
     70,
     window.innerWidth / window.innerHeight,
-    0.1,
-    100
+    0.00001,
+    -1
   );
   camera.position.z = 2;
   scene = new THREE.Scene();
@@ -22,16 +28,18 @@ function init() {
   earthRender();
   skyboxRender();
 
-  //Get Shaders
-  //const fragmentShader = document.getElementById("fragmentShader").textContent;
-  //const vertexShader = document.getElementById("vertexShader").textContent;
-
   //Render Stuff
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setAnimationLoop(animate);
   document.body.appendChild(renderer.domElement);
+
+  //Orbit Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  camera.position.set(0, 20, 10);
+  controls.update();
+
   window.addEventListener("resize", onWindowResize);
 }
 
@@ -66,6 +74,11 @@ function earthRender() {
     displacementMap: earthHeightmap,
     displacementScale: radius / heightmaprange,
   });
+  /*var material = new THREE.ShaderMaterial({
+    uniforms: uniforms1,
+    fragmentShader: document.getElementById("fragmentShader").textContent,
+    vertexShader: document.getElementById("vertexShader").textContent,
+  });*/
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
 }
@@ -75,8 +88,11 @@ function skyboxRender() {
     "./images/MilkyWay-Mercator-Texture.jpg"
   );
   skyboxTexture.colorSpace = THREE.SRGBColorSpace;
-  const skyboxGeometry = new THREE.SphereGeometry(-50, 4, 4);
-  const skyboxMaterial = new THREE.MeshBasicMaterial({ map: skyboxTexture });
+  const skyboxGeometry = new THREE.SphereGeometry(4294967295, 32, 32);
+  const skyboxMaterial = new THREE.MeshBasicMaterial({
+    map: skyboxTexture,
+    side: THREE.BackSide,
+  });
   skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
   scene.add(skybox);
 }
