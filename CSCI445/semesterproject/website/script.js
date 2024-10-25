@@ -1,14 +1,9 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
-let camera, scene, renderer;
-let earth, skybox;
-let t = 0;
-var uniforms1 = {
-  time: { value: t },
-  resolution: { value: new THREE.Vector2() },
-};
+let camera, scene, renderer, earth, skybox;
 init();
-function init() {
+
+async function init() {
   //Initialize Stuff
   camera = new THREE.PerspectiveCamera(
     70,
@@ -19,14 +14,9 @@ function init() {
   camera.position.z = 2;
   scene = new THREE.Scene();
 
-  //Add a light
-  const light = new THREE.DirectionalLight(0xffffff, 10);
-  light.position.set(1, 1, 1).normalize();
-  scene.add(light);
-
   //Setup meshes
-  earthRender();
-  skyboxRender();
+  await earthRender();
+  await skyboxRender();
 
   //Render Stuff
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -54,7 +44,7 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-function earthRender() {
+async function earthRender() {
   const radius = 1,
     heightmaprange = 6400;
   const earthDayTexture = new THREE.TextureLoader().load(
@@ -69,21 +59,23 @@ function earthRender() {
   earthDayTexture.colorSpace = THREE.SRGBColorSpace;
   earthNightTexture.colorSpace = THREE.SRGBColorSpace;
   const earthGeometry = new THREE.SphereGeometry(radius, 128, 128);
-  const earthMaterial = new THREE.MeshStandardMaterial({
+  const earthFragmentShader = await loadShader("./shaders/earthfragment.glsl");
+  const earthVertexShader = await loadShader("./shaders/earthvertex.glsl");
+  /*const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
     displacementScale: radius / heightmaprange,
-  });
-  /*var material = new THREE.ShaderMaterial({
-    uniforms: uniforms1,
-    fragmentShader: document.getElementById("fragmentShader").textContent,
-    vertexShader: document.getElementById("vertexShader").textContent,
   });*/
+  var earthMaterial = new THREE.ShaderMaterial({
+    uniforms: { uTexture: { value: earthDayTexture } },
+    fragmentShader: earthFragmentShader,
+    vertexShader: earthVertexShader,
+  });
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
 }
 
-function skyboxRender() {
+async function skyboxRender() {
   const skyboxTexture = new THREE.TextureLoader().load(
     "./images/MilkyWay-Mercator-Texture.jpg"
   );
@@ -95,4 +87,17 @@ function skyboxRender() {
   });
   skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
   scene.add(skybox);
+}
+
+async function loadShader(shaderfile) {
+  return new Promise((resolve, reject) => {
+    const loader = new THREE.FileLoader();
+    loader.setResponseType("text");
+    loader.load(
+      shaderfile,
+      (data) => resolve(data),
+      undefined,
+      (error) => reject(error)
+    );
+  });
 }
