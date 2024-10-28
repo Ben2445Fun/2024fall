@@ -1,18 +1,25 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
-let camera, scene, renderer, earth, skybox;
+let camera, scene, renderer, earth, skybox, pointLight;
 init();
 
 async function init() {
   //Initialize Stuff
   camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth / window.innerHeight,
-    0.00001,
-    -1
+    70, // Field of View
+    window.innerWidth / window.innerHeight, // Resolution
+    0.00001, // Near-plane clipping
+    -1 // Far-plane clipping
   );
-  camera.position.z = 2;
+  camera.position.z = 1;
   scene = new THREE.Scene();
+
+  //Add Lighting
+  pointLight = new THREE.DirectionalLight(0xffffff, 1);
+  await pointLight.position.set(0, 0, 10);
+  scene.add(pointLight);
+  //ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Change color and brightness later
+  //scene.add(ambientLight);
 
   //Setup meshes
   await earthRender();
@@ -46,7 +53,7 @@ function animate() {
 
 async function earthRender() {
   const radius = 1,
-    heightmaprange = 6400;
+    heightmaprange = 6; //Actual range is 6400
   const earthDayTexture = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Day-Texture.jpg"
   );
@@ -59,15 +66,22 @@ async function earthRender() {
   earthDayTexture.colorSpace = THREE.SRGBColorSpace;
   earthNightTexture.colorSpace = THREE.SRGBColorSpace;
   const earthGeometry = new THREE.SphereGeometry(radius, 128, 128);
-  const earthFragmentShader = await loadShader("./shaders/earthfragment.glsl");
-  const earthVertexShader = await loadShader("./shaders/earthvertex.glsl");
+  const earthFragmentShader = await loadShader("./shaders/earth.frag");
+  const earthVertexShader = await loadShader("./shaders/earth.vert");
   /*const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
     displacementScale: radius / heightmaprange,
   });*/
   var earthMaterial = new THREE.ShaderMaterial({
-    uniforms: { uTexture: { value: earthDayTexture } },
+    uniforms: {
+      dayTexture: { value: earthDayTexture },
+      nightTexture: { value: earthNightTexture },
+      heightmap: { value: earthHeightmap },
+      heightmapScale: { value: radius / heightmaprange },
+      minLayers: { value: 0 },
+      maxLayers: { value: heightmaprange },
+    },
     fragmentShader: earthFragmentShader,
     vertexShader: earthVertexShader,
   });
