@@ -15,7 +15,7 @@ async function init() {
   scene = new THREE.Scene();
 
   //Add Lighting
-  pointLight = new THREE.DirectionalLight(0xffffff, 1);
+  pointLight = new THREE.DirectionalLight(0xffffff, 10);
   await pointLight.position.set(0, 0, 10);
   scene.add(pointLight);
   //ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Change color and brightness later
@@ -34,7 +34,7 @@ async function init() {
 
   //Orbit Controls
   const controls = new OrbitControls(camera, renderer.domElement);
-  camera.position.set(0, 20, 10);
+  camera.position.set(0, 5, 0);
   controls.update();
 
   window.addEventListener("resize", onWindowResize);
@@ -48,12 +48,13 @@ function onWindowResize() {
 
 function animate() {
   earth.rotation.y += 0.0000013888888888889; /*!! UPDATE TO USE EPOCH TIME !!*/
+  earth.rotation.y += 0.001;
   renderer.render(scene, camera);
 }
 
 async function earthRender() {
   const radius = 1,
-    heightmaprange = 6; //Actual range is 6400
+    heightmaprange = 64; //Actual range is 6400
   const earthDayTexture = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Day-Texture.jpg"
   );
@@ -63,27 +64,21 @@ async function earthRender() {
   const earthHeightmap = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Heightmap.png"
   );
+  const earthMetalMap = new THREE.TextureLoader().load(
+    "./images/Earth-Mercator-Metalness.png"
+  );
   earthDayTexture.colorSpace = THREE.SRGBColorSpace;
   earthNightTexture.colorSpace = THREE.SRGBColorSpace;
+  earthMetalMap.colorSpace = THREE.SRGBColorSpace;
   const earthGeometry = new THREE.SphereGeometry(radius, 128, 128);
-  const earthFragmentShader = await loadShader("./shaders/earth.frag");
-  const earthVertexShader = await loadShader("./shaders/earth.vert");
-  /*const earthMaterial = new THREE.MeshStandardMaterial({
+  const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
     displacementScale: radius / heightmaprange,
-  });*/
-  var earthMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      dayTexture: { value: earthDayTexture },
-      nightTexture: { value: earthNightTexture },
-      heightmap: { value: earthHeightmap },
-      heightmapScale: { value: radius / heightmaprange },
-      minLayers: { value: 0 },
-      maxLayers: { value: heightmaprange },
-    },
-    fragmentShader: earthFragmentShader,
-    vertexShader: earthVertexShader,
+    metalness: 1.0,
+    metalnessMap: earthMetalMap,
+    lightMap: earthNightTexture,
+    lightMapIntensity: 5.0,
   });
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
@@ -101,17 +96,4 @@ async function skyboxRender() {
   });
   skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
   scene.add(skybox);
-}
-
-async function loadShader(shaderfile) {
-  return new Promise((resolve, reject) => {
-    const loader = new THREE.FileLoader();
-    loader.setResponseType("text");
-    loader.load(
-      shaderfile,
-      (data) => resolve(data),
-      undefined,
-      (error) => reject(error)
-    );
-  });
 }
