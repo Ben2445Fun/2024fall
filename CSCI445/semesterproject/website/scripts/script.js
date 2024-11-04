@@ -22,6 +22,7 @@ async function init() {
   //Setup meshes
   await earthRender();
   await sunRender();
+  await moonRender();
   await skyboxRender();
 
   //Render Stuff
@@ -52,8 +53,6 @@ function animate() {
 }
 
 async function earthRender() {
-  const radius = 1,
-    heightmaprange = 64; //Actual range is 6400
   const earthDayTexture = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Day-Texture.jpg"
   );
@@ -69,11 +68,11 @@ async function earthRender() {
   earthDayTexture.colorSpace = THREE.SRGBColorSpace;
   earthNightTexture.colorSpace = THREE.SRGBColorSpace;
   earthMetalMap.colorSpace = THREE.SRGBColorSpace;
-  const earthGeometry = new THREE.SphereGeometry(radius, 128, 128);
+  const earthGeometry = new THREE.SphereGeometry(1, 128, 128);
   const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
-    displacementScale: radius / heightmaprange,
+    displacementScale: 0.00015625 * 100, //Use the second number to change the scale of the displacement
     metalness: 1.0,
     metalnessMap: earthMetalMap,
     lightMap: earthNightTexture, //The light map works surprisingly well for switching between day and night
@@ -98,6 +97,28 @@ async function sunRender() {
   sun = new THREE.Mesh(sunGeometry, sunMaterial);
   scene.add(sun);
   sun.position.z = 2360.6969078637576518599905823262;
+}
+
+async function moonRender() {
+  const moonGeometry = new THREE.SphereGeometry(
+    0.27270890168738001414570071738911,
+    64,
+    64
+  );
+  const moonTexture = new THREE.TextureLoader().load(
+    "./images/Moon-Mercator-Texture.jpg"
+  );
+  const moonHeightmap = new THREE.TextureLoader().load(
+    "./images/Moon-Mercator-Heightmap.jpg"
+  );
+  const moonMaterial = new THREE.MeshStandardMaterial({
+    map: moonTexture,
+    displacementMap: moonHeightmap,
+    displacementScale: 0.0001 * 100, //Use the second number to change the scale of the displacement
+  });
+  moon = new THREE.Mesh(moonGeometry, moonMaterial);
+  scene.add(moon);
+  moon.position.x = 15;
 }
 
 async function skyboxRender() {
