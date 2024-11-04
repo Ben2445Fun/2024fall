@@ -1,6 +1,6 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
-let camera, scene, renderer, earth, skybox, pointLight;
+let camera, scene, renderer, earth, skybox, pointLight, moon, sun;
 init();
 
 async function init() {
@@ -18,11 +18,10 @@ async function init() {
   pointLight = new THREE.DirectionalLight(0xffffff, 10);
   await pointLight.position.set(0, 0, 10);
   scene.add(pointLight);
-  //ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Change color and brightness later
-  //scene.add(ambientLight);
 
   //Setup meshes
   await earthRender();
+  await sunRender();
   await skyboxRender();
 
   //Render Stuff
@@ -77,11 +76,28 @@ async function earthRender() {
     displacementScale: radius / heightmaprange,
     metalness: 1.0,
     metalnessMap: earthMetalMap,
-    lightMap: earthNightTexture,
+    lightMap: earthNightTexture, //The light map works surprisingly well for switching between day and night
     lightMapIntensity: 5.0,
   });
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
+  earth.rotation.x = 0.04266342470146588540834507679651; //Actual tilt of the earth
+}
+
+async function sunRender() {
+  //The sun flickers. Unknown reason why
+  const sunGeometry = new THREE.SphereGeometry(
+    109.16656562594725674446802061231,
+    16,
+    16
+  );
+  const sunMaterial = new THREE.MeshLambertMaterial({
+    emissive: "#fdde31",
+    emissiveIntensity: 10000.0,
+  });
+  sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  scene.add(sun);
+  sun.position.z = 2360.6969078637576518599905823262;
 }
 
 async function skyboxRender() {
