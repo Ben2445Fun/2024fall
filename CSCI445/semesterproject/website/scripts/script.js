@@ -20,10 +20,10 @@ async function init() {
   scene.add(pointLight);
 
   //Setup meshes
-  await earthRender();
-  await sunRender();
-  await moonRender();
-  await skyboxRender();
+  earthRender();
+  sunRender();
+  moonRender();
+  skyboxRender();
 
   //Render Stuff
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -47,8 +47,24 @@ function onWindowResize() {
 }
 
 function animate() {
-  earth.rotation.y += 0.0000013888888888889; /*!! UPDATE TO USE EPOCH TIME !!*/
-  earth.rotation.y += 0.001;
+  //* Rotate Earth and Moon in real-time
+  earth.rotation.y = (Date.now() / 86_400_000) % 360;
+  moon.rotation.y = (Date.now() / 2_548_800_000) % 360;
+
+  //* Moon orbit
+  moon.position.x = Math.sin((Date.now() / 2_358_720_000) % 360) * 15;
+  moon.position.z = Math.cos((Date.now() / 2_358_720_000) % 360) * 15;
+
+  //* Sun orbit
+  sun.position.x =
+    Math.sin((Date.now() / 31_556_736_000) % 360) *
+    2360.6969078637576518599905823262;
+  sun.position.z =
+    Math.cos((Date.now() / 31_556_736_000) % 360) *
+    2360.6969078637576518599905823262;
+  pointLight.position.x = sun.position.x;
+  pointLight.position.z = sun.position.z;
+
   renderer.render(scene, camera);
 }
 
@@ -96,7 +112,6 @@ async function sunRender() {
   });
   sun = new THREE.Mesh(sunGeometry, sunMaterial);
   scene.add(sun);
-  sun.position.z = 2360.6969078637576518599905823262;
 }
 
 async function moonRender() {
@@ -118,7 +133,6 @@ async function moonRender() {
   });
   moon = new THREE.Mesh(moonGeometry, moonMaterial);
   scene.add(moon);
-  moon.position.x = 15;
 }
 
 async function skyboxRender() {
