@@ -1,6 +1,8 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
 let camera, scene, renderer, earth, skybox, pointLight, moon, sun;
+let PI = 3.1415926;
+let scale = 100;
 init();
 
 async function init() {
@@ -48,19 +50,19 @@ function onWindowResize() {
 
 function animate() {
   //* Rotate Earth and Moon in real-time
-  earth.rotation.y = (Date.now() / 86_400_000) % 360;
-  moon.rotation.y = (Date.now() / 2_548_800_000) % 360;
+  earth.rotation.y = (Date.now() / 86_400_000) * 2 * PI;
+  moon.rotation.y = (Date.now() / 2_548_800_000) * 2 * PI;
 
   //* Moon orbit
-  moon.position.x = Math.sin((Date.now() / 2_358_720_000) % 360) * 15;
-  moon.position.z = Math.cos((Date.now() / 2_358_720_000) % 360) * 15;
+  moon.position.x = Math.sin((Date.now() / 2_358_720_000) * 2 * PI) * 15;
+  moon.position.z = Math.cos((Date.now() / 2_358_720_000) * 2 * PI) * 15;
 
   //* Sun orbit
   sun.position.x =
-    Math.sin((Date.now() / 31_556_736_000) % 360) *
+    Math.sin((Date.now() / 31_556_736_000) * 2 * PI) *
     2360.6969078637576518599905823262;
   sun.position.z =
-    Math.cos((Date.now() / 31_556_736_000) % 360) *
+    Math.cos((Date.now() / 31_556_736_000) * 2 * PI) *
     2360.6969078637576518599905823262;
   pointLight.position.x = sun.position.x;
   pointLight.position.z = sun.position.z;
@@ -88,7 +90,7 @@ async function earthRender() {
   const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
-    displacementScale: 0.00015625 * 100, //Use the second number to change the scale of the displacement
+    displacementScale: 0.00015625 * scale, //Use the second number to change the scale of the displacement
     metalness: 1.0,
     metalnessMap: earthMetalMap,
     lightMap: earthNightTexture, //The light map works surprisingly well for switching between day and night
@@ -129,7 +131,7 @@ async function moonRender() {
   const moonMaterial = new THREE.MeshStandardMaterial({
     map: moonTexture,
     displacementMap: moonHeightmap,
-    displacementScale: 0.0001 * 100, //Use the second number to change the scale of the displacement
+    displacementScale: 0.0001 * scale, //Use the second number to change the scale of the displacement
   });
   moon = new THREE.Mesh(moonGeometry, moonMaterial);
   scene.add(moon);
