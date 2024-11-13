@@ -1,7 +1,7 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
 let camera, scene, renderer, earth, skybox, pointLight, moon, sun;
-let PI = 3.1415926;
+let PI = 3.1415926535897932384626433832795;
 let scale = 100;
 init();
 
@@ -50,22 +50,44 @@ function onWindowResize() {
 
 function animate() {
   //* Rotate Earth and Moon in real-time
-  earth.rotation.y = (Date.now() / 86_400_000) * 2 * PI;
-  moon.rotation.y = (Date.now() / 2_548_800_000) * 2 * PI;
+  earth.rotation.y =
+    (Date.now() % 86_400_000) *
+    ((0.00000416666666666666666666666666667 * PI) / 180);
+  moon.rotation.y =
+    (Date.now() / 2_358_720_000) *
+    ((0.00000015250414991327385530279169436982 * PI) / 180);
 
   //* Moon orbit
-  moon.position.x = Math.sin((Date.now() / 2_358_720_000) * 2 * PI) * 15;
-  moon.position.z = Math.cos((Date.now() / 2_358_720_000) * 2 * PI) * 15;
+  moon.position.x =
+    Math.sin(
+      (Date.now() / 2_358_720_000) *
+        ((0.00000015250414991327385530279169436982 * PI) / 180)
+    ) * 15;
+  moon.position.z =
+    Math.cos(
+      (Date.now() / 2_358_720_000) *
+        ((0.00000015250414991327385530279169436982 * PI) / 180)
+    ) * 15;
 
   //* Sun orbit
   sun.position.x =
-    Math.sin((Date.now() / 31_556_736_000) * 2 * PI) *
-    2360.6969078637576518599905823262;
+    Math.sin(
+      (Date.now() % 31_556_736_000) *
+        ((0.00000001140802394772387106195013324572 * PI) / 180)
+    ) * 2360.6969078637576518599905823262;
   sun.position.z =
-    Math.cos((Date.now() / 31_556_736_000) * 2 * PI) *
-    2360.6969078637576518599905823262;
+    Math.cos(
+      (Date.now() % 31_556_736_000) *
+        ((0.00000001140802394772387106195013324572 * PI) / 180)
+    ) * 2360.6969078637576518599905823262;
   pointLight.position.x = sun.position.x;
   pointLight.position.z = sun.position.z;
+
+  //* Console Logs
+  console.log("Earth's Rotation: ", (earth.rotation.y * 180) / PI);
+  console.log("Moon's Rotation: ", (moon.rotation.y * 180) / PI);
+  console.log("Moon's Position: ", moon.position);
+  console.log("Sun's Position: ", sun.position);
 
   renderer.render(scene, camera);
 }
