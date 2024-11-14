@@ -17,5 +17,7 @@ axs.set_label('Z')
 new3DData(axs,'Red','red')
 new3DData(axs,'Blue','blue')
 new3DData(axs,'Green','green')
-plot.show()
 disconnectDB()
+plot.show()
+
+#select label,sqrt((x-10)*(x+10)+(y-10)*(y+10)+(z-10)*(z-10)) as d from points order by d limit 20;
