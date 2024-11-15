@@ -11,9 +11,9 @@ def new3DData(axs,label,color):
 
 cursor = connectDB()
 fig,axs=plot.subplots(subplot_kw={"projection":"3d"})
-axs.set_label('X')
-axs.set_label('Y')
-axs.set_label('Z')
+axs.set_xlabel('X')
+axs.set_ylabel('Y')
+axs.set_zlabel('Z')
 new3DData(axs,'Red','red')
 new3DData(axs,'Blue','blue')
 new3DData(axs,'Green','green')

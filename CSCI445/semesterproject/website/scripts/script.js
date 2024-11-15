@@ -120,7 +120,7 @@ async function earthRender() {
   });
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
-  earth.rotation.x = 0.04266342470146588540834507679651; //Actual tilt of the earth
+  //earth.rotation.x = (23.44 * PI) / -180; //Actual tilt of the earth | I don't like it
 }
 
 async function sunRender() {
