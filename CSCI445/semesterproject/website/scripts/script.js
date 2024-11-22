@@ -1,6 +1,15 @@
 import * as THREE from "./three.js";
 import { OrbitControls } from "./OrbitControls.js";
-let camera, scene, renderer, earth, skybox, pointLight, moon, sun;
+let camera,
+  scene,
+  renderer,
+  earth,
+  skybox,
+  pointLight,
+  moon,
+  sun,
+  pof,
+  controls;
 let PI = 3.1415926535897932384626433832795;
 let scale = 100;
 init();
@@ -35,9 +44,13 @@ async function init() {
   document.body.appendChild(renderer.domElement);
 
   //Orbit Controls
-  const controls = new OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   camera.position.set(0, 5, 0);
   controls.update();
+  const pofGeometry = new THREE.SphereGeometry(0.01, 8, 8);
+  const pofMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  pof = new THREE.Mesh(pofGeometry, pofMaterial);
+  scene.add(pof);
 
   window.addEventListener("resize", onWindowResize);
 }
@@ -49,6 +62,7 @@ function onWindowResize() {
 }
 
 function animate() {
+  pof.position.copy(controls.target);
   //* Rotate Earth and Moon in real-time
   earth.rotation.y =
     (Date.now() % 86_400_000) *
@@ -84,10 +98,10 @@ function animate() {
   pointLight.position.z = sun.position.z;
 
   //* Console Logs
-  console.log("Earth's Rotation: ", (earth.rotation.y * 180) / PI);
-  console.log("Moon's Rotation: ", (moon.rotation.y * 180) / PI);
-  console.log("Moon's Position: ", moon.position);
-  console.log("Sun's Position: ", sun.position);
+  //!console.log("Earth's Rotation: ", (earth.rotation.y * 180) / PI);
+  //!console.log("Moon's Rotation: ", (moon.rotation.y * 180) / PI);
+  //!console.log("Moon's Position: ", moon.position);
+  //!console.log("Sun's Position: ", sun.position);
 
   renderer.render(scene, camera);
 }
