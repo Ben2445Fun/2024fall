@@ -66,7 +66,8 @@ function animate() {
   //* Rotate Earth and Moon in real-time
   earth.rotation.y =
     (Date.now() % 86_400_000) *
-    ((0.00000416666666666666666666666666667 * PI) / 180);
+      ((0.00000416666666666666666666666666667 * PI) / 180) +
+    PI / 2;
   moon.rotation.y =
     (Date.now() / 2_358_720_000) *
     ((0.00000015250414991327385530279169436982 * PI) / 180);
@@ -108,7 +109,7 @@ function animate() {
 
 async function earthRender() {
   const earthDayTexture = new THREE.TextureLoader().load(
-    "./images/Earth-Mercator-Day-Texture.jpg"
+    "./images/Earth-Mercator-Day-Texture.jpg" // Water color is #020514
   );
   const earthNightTexture = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Night-Texture.jpg"
@@ -116,37 +117,42 @@ async function earthRender() {
   const earthHeightmap = new THREE.TextureLoader().load(
     "./images/Earth-Mercator-Heightmap.png"
   );
-  const earthMetalMap = new THREE.TextureLoader().load(
-    "./images/Earth-Mercator-Metalness.png"
-  );
   earthDayTexture.colorSpace = THREE.SRGBColorSpace;
   earthNightTexture.colorSpace = THREE.SRGBColorSpace;
-  earthMetalMap.colorSpace = THREE.SRGBColorSpace;
   const earthGeometry = new THREE.SphereGeometry(1, 128, 128);
   const earthMaterial = new THREE.MeshStandardMaterial({
     map: earthDayTexture,
     displacementMap: earthHeightmap,
-    displacementScale: 0.00015625 * scale, //Use the second number to change the scale of the displacement
     metalness: 1.0,
-    metalnessMap: earthMetalMap,
+    metalnessMap: earthDayTexture,
+    displacementScale: 0.00015625 * scale, //Use the second number to change the scale of the displacement
     lightMap: earthNightTexture, //The light map works surprisingly well for switching between day and night
     lightMapIntensity: 5.0,
   });
+  const earthFragmentShader = await loadShader("./shaders/earth.frag");
+  const earthVertexShader = await loadShader("./shaders/earth.vert");
+  var earthShaderMaterial = new THREE.ShaderMaterial({
+    fragmentShader: earthFragmentShader,
+    vertexShader: earthVertexShader,
+  });
   earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
-  //earth.rotation.x = (23.44 * PI) / -180; //Actual tilt of the earth | I don't like it
+  //earth.rotation.x = (23.44 * PI) / 180; //Actual tilt of the earth | I don't like it
 }
 
 async function sunRender() {
-  //The sun flickers. Unknown reason why
+  //It uses texture now and still flashes, whyyyyyyy
+  const sunTexture = new THREE.TextureLoader().load(
+    "./images/Sun-Mercator-Texture.jpg"
+  );
+  sunTexture.colorSpace = THREE.SRGBColorSpace;
   const sunGeometry = new THREE.SphereGeometry(
     109.16656562594725674446802061231,
     16,
     16
   );
-  const sunMaterial = new THREE.MeshLambertMaterial({
-    emissive: "#fdde31",
-    emissiveIntensity: 10000.0,
+  const sunMaterial = new THREE.MeshBasicMaterial({
+    map: sunTexture,
   });
   sun = new THREE.Mesh(sunGeometry, sunMaterial);
   scene.add(sun);
@@ -185,4 +191,17 @@ async function skyboxRender() {
   });
   skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
   scene.add(skybox);
+}
+
+async function loadShader(shaderfile) {
+  return new Promise((resolve, reject) => {
+    const loader = new THREE.FileLoader();
+    loader.setResponseType("text");
+    loader.load(
+      shaderfile,
+      (data) => resolve(data),
+      undefined,
+      (error) => reject(error)
+    );
+  });
 }
